@@ -25,6 +25,8 @@ bash stipple_gen.sh --display true --inputImage myImage.jpg --outputImage myStip
 
 This will take your original image `myImage.jpg` and run it through the stippling process using the default variables for everything and output two files for you: `myStippledImage.jpg` and `myStippledDrawing.svg`, the latter of which you can use on your plotter.
 
+The `--display true` arguments will show the progress of the script in the main window, which the default. Run it headless with `--display false`.
+
 Other variables: 
 
 ```java
