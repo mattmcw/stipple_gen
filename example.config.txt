@@ -1,0 +1,5 @@
+display=true
+inputImage=grace.jpg
+outputImage=output.png
+outputSVG=output.svg
+maxGenerations=40
