@@ -1332,6 +1332,7 @@ void draw () {
     float SVGscale = (800.0 / (float) config.canvasHeight); 
     int xOffset = (int) (1600 - (SVGscale * config.canvasWidth / 2));
     int yOffset = (int) (400  - (SVGscale * config.canvasHeight / 2));
+    ArrayList<float[]> hatchLines;
 
     if (FileModeTSP) { 
       // Plot the PATH between the points only.
@@ -1377,7 +1378,14 @@ void draw () {
         rowTemp = "<circle cx=\"" + xTemp + "\" cy=\"" + yTemp + "\" r=\"" + dotrad +
           "\" style=\"fill:none;stroke:black;stroke-width:1;\"/>";
         // Typ:   <circle  cx="1600" cy="450" r="3" style="fill:none;stroke:black;stroke-width:2;"/>
-
+        if (config.fill) {
+          hatchLines = fillCircle(xTemp, yTemp, dotrad, 45.0, config.MaxDotSize);
+          if (hatchLines.size() > 0) {
+            for (float[] linePoints : hatchLines) {
+              rowTemp += "<line x1=\"" + linePoints[0] + "\" y1=\"" + linePoints[1] + "\" x2=\"" + linePoints[2] + "\" y2=\"" + linePoints[3] + "\" style=\"fill:none;stroke:black;stroke-width:1;\"/>";
+            }
+          }
+        }
         FileOutput = append(FileOutput, rowTemp);
       }
     }
