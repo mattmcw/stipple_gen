@@ -105,9 +105,9 @@ public class Config {
   public int testsPerFrame = 90000; //
   public int maxGenerations = 5; //number of generations
 
-  public float MinDotSize = 1.25;  //2;
-  public float MaxDotSize;
-  public float DotSizeFactor = 4;  //5;
+  public float minDotSize = 1.25;  //2;
+  public float maxDotSize;
+  public float dotSizeFactor = 4;  //5;
 
   public int maxParticles = 2000;   // Max value is normally 10000.
   public float cutoff =  0;  // White cutoff value
@@ -260,14 +260,14 @@ public class Config {
       case "maxGenerations" :
         maxGenerations = intOrDie(name, val);
         break;
-      case "MinDotSize" :
-        MinDotSize = floatOrDie(name, val);
+      case "minDotSize" :
+        minDotSize = floatOrDie(name, val);
         break;
-      case "MaxDotSize" :
-        MaxDotSize = floatOrDie(name, val);
+      case "maxDotSize" :
+        maxDotSize = floatOrDie(name, val);
         break;
-      case "DotSizeFactor" :
-        DotSizeFactor = floatOrDie(name, val);
+      case "dotSizeFactor" :
+        dotSizeFactor = floatOrDie(name, val);
         break;
       case "maxParticles" :
         maxParticles = intOrDie(name, val);
@@ -500,7 +500,7 @@ void setup () {
 
   MainArraysetup();   // Main particle array setup
 
-  config.MaxDotSize = config.MinDotSize * (1 + config.DotSizeFactor); //best way to do this?
+  config.maxDotSize = config.minDotSize * (1 + config.dotSizeFactor); //best way to do this?
 
   ReInitiallizeArray = false;
   showBG  = false;
@@ -656,18 +656,18 @@ void Stipples(int inValue) {
 }
 
 void Min_Dot_Size(float inValue) {
-  if (config.MinDotSize != inValue) {
+  if (config.minDotSize != inValue) {
     println("Update: Min_Dot_Size -> " + inValue);  
-    config.MinDotSize = inValue; 
-    config.MaxDotSize = config.MinDotSize* (1 + config.DotSizeFactor);
+    config.minDotSize = inValue; 
+    config.maxDotSize = config.minDotSize* (1 + config.dotSizeFactor);
   }
 } 
 
 void Dot_Size_Range(float inValue) {  
-  if (config.DotSizeFactor != inValue) {
+  if (config.dotSizeFactor != inValue) {
     println("Update: Dot Size Range -> " + inValue); 
-    config.DotSizeFactor = inValue;
-    config.MaxDotSize = config.MinDotSize* (1 + config.DotSizeFactor);
+    config.dotSizeFactor = inValue;
+    config.maxDotSize = config.minDotSize* (1 + config.dotSizeFactor);
   }
 } 
 
@@ -1162,7 +1162,7 @@ void draw () {
   int i = 0;
   int temp;
   int scaledDimension;
-  float dotScale = (config.MaxDotSize - config.MinDotSize);
+  float dotScale = (config.maxDotSize - config.minDotSize);
   float cutoffScaled = 1 - config.cutoff;
 
   canvas.beginDraw();
@@ -1225,7 +1225,7 @@ void draw () {
     if (showCells) {
       // Show "before and after" centroids, when polygons are shown.
       // Normal w/ Min & Max dot size
-      strokeWeight(config.MinDotSize);  
+      strokeWeight(config.minDotSize);  
       for ( i = 0; i < config.maxParticles; ++i) {
 
         int px = (int) particles[i].x;
@@ -1238,7 +1238,7 @@ void draw () {
         //float v = (brightness(imgblur.pixels[ py*imgblur.width + px ]))/255;  
         //if (config.invert)
         //v = 1 - v;
-        //strokeWeight (config.MaxDotSize - v * dotScale);  
+        //strokeWeight (config.maxDotSize - v * dotScale);  
         canvas.point(px, py);
       }
     }
@@ -1271,7 +1271,7 @@ void draw () {
       }
 
       if (v < cutoffScaled) { 
-        canvas.strokeWeight(config.MaxDotSize - v * dotScale);  
+        canvas.strokeWeight(config.maxDotSize - v * dotScale);  
         canvas.point(px, py);
       }
     }
@@ -1370,7 +1370,7 @@ void draw () {
           v = 1 - v;
         }
 
-        float dotrad = (config.MaxDotSize - v * dotScale) / 2; 
+        float dotrad = (config.maxDotSize - v * dotScale) / 2; 
 
         float xTemp = SVGscale*p1.x + xOffset;
         float yTemp = SVGscale*p1.y + yOffset; 
@@ -1379,7 +1379,7 @@ void draw () {
           "\" style=\"fill:none;stroke:black;stroke-width:1;\"/>";
         // Typ:   <circle  cx="1600" cy="450" r="3" style="fill:none;stroke:black;stroke-width:2;"/>
         if (config.fill) {
-          hatchLines = fillCircle(xTemp, yTemp, dotrad, 45.0, config.MaxDotSize);
+          hatchLines = fillCircle(xTemp, yTemp, dotrad, 45.0, config.maxDotSize);
           if (hatchLines.size() > 0) {
             for (float[] linePoints : hatchLines) {
               rowTemp += "<line x1=\"" + linePoints[0] + "\" y1=\"" + linePoints[1] + "\" x2=\"" + linePoints[2] + "\" y2=\"" + linePoints[3] + "\" style=\"fill:none;stroke:black;stroke-width:1;\"/>";
