@@ -500,13 +500,6 @@ void setup () {
 
   MainArraysetup();   // Main particle array setup
 
-  int leftcolumwidth = 225;
-
-  int GUItop = config.canvasHeight + 15;
-  int GUI2ndRow = 4;   // Spacing for firt row after group heading
-  int GuiRowSpacing = 14;  // Spacing for subsequent rows
-  int GUIFudge = config.canvasHeight + 19;  // I wish that we didn't need ONE MORE of these stupid spacings.
-
   config.MaxDotSize = config.MinDotSize * (1 + config.DotSizeFactor); //best way to do this?
 
   ReInitiallizeArray = false;
