@@ -116,6 +116,7 @@ public class Config {
   public float gamma = 1.0;
   
   public boolean fill = false;
+  public float line = 1.0;
 
   public Config (String inputFile) {
     int index;
@@ -282,6 +283,8 @@ public class Config {
         gamma = floatOrDie(name, val);
       case "fill" :
         fill = boolOrDie(name, val);
+      case "line" :
+        line = floatOrDie(name, val);
     }
     println("[" + source + "] " + name + "=" + val);
   }
@@ -1289,7 +1292,6 @@ void draw () {
       scaledDimension = round((float) width / mainRatio);
       image(canvas, 0, (height - scaledDimension) / 2, width, scaledDimension);
     }
-    println(scaledDimension);
   } 
 
   if (Generation != lastGeneration) {
@@ -1373,14 +1375,14 @@ void draw () {
 
         float dotrad = (config.maxDotSize - v * dotScale) / 2; 
 
-        float xTemp = SVGscale*p1.x + xOffset;
-        float yTemp = SVGscale*p1.y + yOffset; 
+        float xTemp = SVGscale * p1.x + xOffset;
+        float yTemp = SVGscale * p1.y + yOffset; 
 
         rowTemp = "<circle cx=\"" + xTemp + "\" cy=\"" + yTemp + "\" r=\"" + dotrad +
           "\" style=\"fill:none;stroke:black;stroke-width:1;\"/>";
         // Typ:   <circle  cx="1600" cy="450" r="3" style="fill:none;stroke:black;stroke-width:2;"/>
         if (config.fill) {
-          hatchLines = fillCircle(xTemp, yTemp, dotrad, 45.0, config.maxDotSize);
+          hatchLines = fillCircle(xTemp, yTemp, dotrad, 45.0, config.line);
           if (hatchLines.size() > 0) {
             for (float[] linePoints : hatchLines) {
               rowTemp += "<line x1=\"" + linePoints[0] + "\" y1=\"" + linePoints[1] + "\" x2=\"" + linePoints[2] + "\" y2=\"" + linePoints[3] + "\" style=\"fill:none;stroke:black;stroke-width:1;\"/>";
