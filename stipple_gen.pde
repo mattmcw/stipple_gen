@@ -1284,11 +1284,12 @@ void draw () {
   if (config.display) {
     if (mainRatio >= windowRatio) {
       scaledDimension = round((float) height * mainRatio);
-      image(canvas, 0, (height - scaledDimension) / 2, width, scaledDimension);
+      image(canvas, (width - scaledDimension) / 2, 0, scaledDimension, height);
     } else {
       scaledDimension = round((float) width / mainRatio);
-      image(canvas, (width - scaledDimension) / 2, 0, scaledDimension, height);
+      image(canvas, 0, (height - scaledDimension) / 2, width, scaledDimension);
     }
+    println(scaledDimension);
   } 
 
   if (Generation != lastGeneration) {
