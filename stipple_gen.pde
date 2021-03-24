@@ -114,6 +114,8 @@ public class Config {
 
   public boolean gammaCorrection = false;
   public float gamma = 1.0;
+  
+  public boolean fill = false;
 
   public Config (String inputFile) {
     int index;
@@ -278,12 +280,16 @@ public class Config {
         break;
       case "gamma" :
         gamma = floatOrDie(name, val);
+      case "fill" :
+        fill = boolOrDie(name, val);
     }
     println("[" + source + "] " + name + "=" + val);
   }
 }
 
 Config config;
+
+final float ACCY    = 1E-9f;
 
 int cellBuffer = 100;  //Scale each cell to fit in a cellBuffer-sized square window for computing the centroid.
 int borderWidth = 6;
@@ -1039,6 +1045,124 @@ void doPhysics() {
       millisLastFrame = millis();
     }
   }
+}
+
+/**
+ * https://forum.processing.org/two/discussion/3506/point-on-an-outer-circle-intercepted-by-a-line-perpendicular-to-the-tangent-of-an-inner-circle
+ * Calculate the points of intersection between a line and the
+ * circumference of a circle.
+ * [x0, y0] - [x1, y1] the line end coordinates 
+ * [cx, cy] the centre of the circle
+ * r the radius of the circle
+ *
+ * An array is returned that contains the intersection points in x, y order.
+ * If the returned array is of length: 
+ * 0 then there is no intersection 
+ * 2 there is just one intersection (the line is a tangent to the circle) 
+ * 4 there are two intersections 
+ */
+public float[] line_circle_p(float x0, float y0, float x1, float y1, float cx, float cy, float r) {
+  float[] result = null;
+  float f = (x1 - x0);
+  float g = (y1 - y0);
+  float fSQ = f*f;
+  float gSQ = g*g;
+  float fgSQ = fSQ + gSQ;
+ 
+  float xc0 = cx - x0;
+  float yc0 = cy - y0;
+ 
+  float fygx = f*yc0 - g*xc0;
+  float root = r*r*fgSQ - fygx*fygx;
+  if (root > -ACCY) {
+    float[] temp = null;
+    int np = 0;
+    float fxgy = f*xc0 + g*yc0;
+    if (root < ACCY) {    // tangent so just one point
+      float t = fxgy / fgSQ;
+      temp = new float[] { 
+        x0 + f*t, y0 + g*t
+      };
+      np = 2;
+    }
+    else {  // possibly two intersections
+      temp = new float[4];
+      root = sqrt(root);
+      float t = (fxgy - root)/fgSQ;
+      //     if (t >= 0 && t <= 1) {
+      temp[np++] = x0 + f*t;
+      temp[np++] = y0 + g*t;
+      t = (fxgy + root)/fgSQ;
+      temp[np++] = x0 + f*t;
+      temp[np++] = y0 + g*t;
+    }
+    if (temp != null) {
+      result = new float[np];
+      System.arraycopy(temp, 0, result, 0, np);
+    }
+  }
+  return (result == null) ? new float[0] : result;
+}
+
+/**
+ * Create hatch lines within a circle determined by a line width
+ *
+ * x {float} center of circle on x axis
+ * y {float} center of circle on y axis
+ * d {float} diameter of circle
+ * angle {float} angle of hatching, 0-360
+ * line {float} width of line
+ **/
+ArrayList<float[]> fillCircle (float x, float y, float d, float angle, float line) {
+  ArrayList<float[]> output = new ArrayList<float[]>();
+  float r = (d / 2.0) - line;
+  float perpAngle = (angle + 90.0) % 360.0;
+  float perpRadian = radians(perpAngle);
+  float radian = radians(angle);
+  int lines = floor(d / line);
+  float perpX = 0;
+  float perpY = 0;
+  float startX = 0;
+  float startY = 0;
+  float endX = 0;
+  float endY = 0;
+  float testX = 0;
+  float testY = 0;
+  float[] intersect;
+
+  for (int i = -floor(lines / 2); i < floor(lines / 2); i++) {
+    perpX = x + ((line * (i + 0.5)) * cos(perpRadian));
+    perpY = y + ((line * (i + 0.5)) * sin(perpRadian));
+    testX = perpX + (d * cos(radian));
+    testY = perpY + (d * sin(radian));
+    
+    intersect = line_circle_p(perpX, perpY, testX, testY, x, y, r);
+
+    if (intersect.length > 0) {
+      startX = intersect[0];
+      startY = intersect[1];
+    } else {
+      continue;
+    }
+    
+    testX = startX - (d * cos(radian));
+    testY = startY - (d * sin(radian));
+
+    intersect = line_circle_p(perpX, perpY, testX, testY, x, y, r);
+
+    if (intersect.length > 0) {
+      endX = intersect[0];
+      endY = intersect[1];
+    } else {
+      continue;
+    }
+
+    if (dist(startX, startY, endX, endY) > line) {
+      float[] linePoints = {startX, startY, endX, endY};
+      output.add(linePoints);
+    }
+  }
+  return output;
 }
 
 void draw () {
