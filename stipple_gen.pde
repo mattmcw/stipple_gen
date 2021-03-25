@@ -1332,7 +1332,7 @@ void draw () {
 
     //Need to get some background on this.
     //what are these magic numbers?
-    float SVGscale = (800.0 / (float) config.canvasHeight); 
+    float SVGscale = (400.0 / (float) config.canvasHeight); 
     int xOffset = (int) (1536 - (SVGscale * config.canvasWidth / 2));
     int yOffset = (int) (1056  - (SVGscale * config.canvasHeight / 2));
     ArrayList<float[]> hatchLines;
@@ -1349,8 +1349,8 @@ void draw () {
 
         Vec2D p1 = particles[particleRoute[i]];  
 
-        float xTemp = SVGscale*p1.x + xOffset;
-        float yTemp = SVGscale*p1.y + yOffset;        
+        float xTemp = SVGscale * p1.x + xOffset;
+        float yTemp = SVGscale * p1.y + yOffset;        
 
         rowTemp = xTemp + " " + yTemp + "\r";
 
