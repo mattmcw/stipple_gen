@@ -1333,8 +1333,8 @@ void draw () {
     //Need to get some background on this.
     //what are these magic numbers?
     float SVGscale = (800.0 / (float) config.canvasHeight); 
-    int xOffset = (int) (1536 - (SVGscale * config.canvasWidth / 2));
-    int yOffset = (int) (1056  - (SVGscale * config.canvasHeight / 2));
+    int xOffset = 0; //(int) (1536 - (SVGscale * config.canvasWidth / 2));
+    int yOffset = 0; //(int) (1056  - (SVGscale * config.canvasHeight / 2));
     ArrayList<float[]> hatchLines;
 
     if (FileModeTSP) { 
