@@ -208,7 +208,7 @@ public class Config {
   }
 
   private float floatOrDie (String name, String val) {
-    float floatVal = -1;
+    float floatVal = -1.0;
     try {
       floatVal = parseFloat(val);
     } catch (Exception e) {
@@ -283,8 +283,10 @@ public class Config {
         gamma = floatOrDie(name, val);
       case "fill" :
         fill = boolOrDie(name, val);
+        break;
       case "line" :
         line = floatOrDie(name, val);
+        break;
     }
     println("[" + source + "] " + name + "=" + val);
   }
@@ -1166,7 +1168,10 @@ void draw () {
   int temp;
   int scaledDimension;
   float dotScale = (config.maxDotSize - config.minDotSize);
+  float dotRad;
+  float dotDiam;
   float cutoffScaled = 1 - config.cutoff;
+  ArrayList<float[]> hatchLines;
 
   canvas.beginDraw();
   canvas.smooth();
@@ -1259,6 +1264,12 @@ void draw () {
       canvas.stroke(0);
     }
 
+    if (config.line >= 1.0) {
+      canvas.strokeWeight(config.line);
+    } else {
+      canvas.strokeWeight(1.0);
+    }
+
     for ( i = cellsCalculatedLast; i < cellsCalculated; i++) {
       int px = (int) particles[i].x;
       int py = (int) particles[i].y;
@@ -1274,8 +1285,17 @@ void draw () {
       }
 
       if (v < cutoffScaled) { 
-        canvas.strokeWeight(config.maxDotSize - v * dotScale);  
-        canvas.point(px, py);
+        //println(v);
+        dotDiam = (config.maxDotSize - v * dotScale) * 2.0;
+        canvas.ellipse(px, py, dotDiam, dotDiam);
+        if (config.fill) {
+          hatchLines = fillCircle(px, py, dotDiam, 45.0, config.line);
+          if (hatchLines.size() > 0) {
+            for (float[] linePoints : hatchLines) {
+              canvas.line(linePoints[0], linePoints[1], linePoints[2], linePoints[3]);
+            }
+          }
+        }
       }
     }
 
@@ -1335,7 +1355,6 @@ void draw () {
     float SVGscale = (800.0 / (float) config.canvasHeight); 
     int xOffset = 0; //(int) (1536 - (SVGscale * config.canvasWidth / 2));
     int yOffset = 0; //(int) (1056  - (SVGscale * config.canvasHeight / 2));
-    ArrayList<float[]> hatchLines;
 
     if (FileModeTSP) { 
       // Plot the PATH between the points only.
@@ -1373,16 +1392,16 @@ void draw () {
           v = 1 - v;
         }
 
-        float dotrad = (config.maxDotSize - v * dotScale) / 2; 
+        dotRad = (config.maxDotSize - v * dotScale) / 2; 
 
         float xTemp = SVGscale * p1.x + xOffset;
         float yTemp = SVGscale * p1.y + yOffset; 
 
-        rowTemp = "<circle cx=\"" + xTemp + "\" cy=\"" + yTemp + "\" r=\"" + dotrad +
+        rowTemp = "<circle cx=\"" + xTemp + "\" cy=\"" + yTemp + "\" r=\"" + dotRad +
           "\" style=\"fill:none;stroke:black;stroke-width:1;\"/>";
         // Typ:   <circle  cx="1600" cy="450" r="3" style="fill:none;stroke:black;stroke-width:2;"/>
         if (config.fill) {
-          hatchLines = fillCircle(xTemp, yTemp, dotrad, 45.0, config.line);
+          hatchLines = fillCircle(xTemp, yTemp, dotRad * 2.0, 45.0, config.line);
           if (hatchLines.size() > 0) {
             for (float[] linePoints : hatchLines) {
               rowTemp += "<line x1=\"" + linePoints[0] + "\" y1=\"" + linePoints[1] + "\" x2=\"" + linePoints[2] + "\" y2=\"" + linePoints[3] + "\" style=\"fill:none;stroke:black;stroke-width:1;\"/>";
