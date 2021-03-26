@@ -10,7 +10,7 @@ There have also been features added to do the following:
 
 * **Custom output SVG scale**
 * **Custom canvas size**
-* **Option to fill in circles**
+* **Option to fill in circles with hatch lines**
 
 # Usage
 
@@ -30,9 +30,9 @@ The `--display true` arguments will show the progress of the script in the main 
 Other variables: 
 
 ```java
-
 public int canvasWidth = 800;
 public int canvasHeight = 600;
+public float canvasScalar = 1.25;
 
 public boolean display = true;
 public int windowWidth = 800;
@@ -46,12 +46,12 @@ public String outputImage;
 public String outputSVG;
 
 public int centroidsPerPass = 500;
-public int testsPerFrame = 90000; //
+public int testsPerFrame = 90000;
 public int maxGenerations = 5; //number of generations
 
-public float MinDotSize = 1.25;  //2;
+public float MinDotSize = 1.25;
 public float MaxDotSize;
-public float DotSizeFactor = 4;  //5;
+public float DotSizeFactor = 4;
 
 public int maxParticles = 2000;   // Max value is normally 10000.
 public float cutoff =  0;  // White cutoff value
@@ -59,4 +59,9 @@ public float cutoff =  0;  // White cutoff value
 public boolean gammaCorrection = false;
 public float gamma = 1.0;
 
+public boolean fill = false;
+public float line = 1.0;
 ```
+
+This sketch can also be run from the Processing IDE, though it is best to provide arguments with a local `config.txt` file when doing so.
+There isn't a consistent way to provide command line arguments to the IDE on all platforms.
