@@ -89,6 +89,7 @@ public class Config {
 
   public int canvasWidth = 800;
   public int canvasHeight = 600;
+  public float canvasScalar = 1.25;
 
   public boolean display = true;
   public int windowWidth = 800;
@@ -230,6 +231,9 @@ public class Config {
         break;
       case "canvasHeight" :
         canvasHeight = intOrDie(name, val);
+        break;
+      case "canvasScalar" :
+        canvasScalar = floatOrDie(name, val);
         break;
       case "display" :
         display = boolOrDie(name, val);
@@ -1264,8 +1268,8 @@ void draw () {
       canvas.stroke(0);
     }
 
-    if (config.line >= 1.0) {
-      canvas.strokeWeight(config.line);
+    if (config.line * config.canvasScalar >= 1.0) {
+      canvas.strokeWeight(config.line * config.canvasScalar);
     } else {
       canvas.strokeWeight(1.0);
     }
@@ -1286,10 +1290,10 @@ void draw () {
 
       if (v < cutoffScaled) { 
         //println(v);
-        dotDiam = (config.maxDotSize - v * dotScale) * 2.0;
+        dotDiam = (config.maxDotSize - v * dotScale) * 2.0 * config.canvasScalar;
         canvas.ellipse(px, py, dotDiam, dotDiam);
         if (config.fill) {
-          hatchLines = fillCircle(px, py, dotDiam, 45.0, config.line);
+          hatchLines = fillCircle(px, py, dotDiam, 45.0, config.line * config.canvasScalar);
           if (hatchLines.size() > 0) {
             for (float[] linePoints : hatchLines) {
               canvas.line(linePoints[0], linePoints[1], linePoints[2], linePoints[3]);
@@ -1298,7 +1302,6 @@ void draw () {
         }
       }
     }
-
     cellsCalculatedLast = cellsCalculated;
   }
 
@@ -1353,7 +1356,8 @@ void draw () {
     //Need to get some background on this.
     //what are these magic numbers?
     float SVGscale = (800.0 / (float) config.canvasHeight); 
-    int xOffset = 0; //(int) (1536 - (SVGscale * config.canvasWidth / 2));
+    //not centering the image is more controllable
+    int xOffset = 0; //(int) (1536 - (SVGscale * config.canvasWidth / 2)); 
     int yOffset = 0; //(int) (1056  - (SVGscale * config.canvasHeight / 2));
 
     if (FileModeTSP) { 
