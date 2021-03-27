@@ -75,11 +75,7 @@ import toxi.geom.mesh2d.*;
 import toxi.util.datatypes.*;
 import toxi.processing.*;
 
-// helper class for rendering
 ToxiclibsSupport gfx;
-
-//import javax.swing.UIManager; 
-import javax.swing.JFileChooser; 
 
 public class Config {
 
