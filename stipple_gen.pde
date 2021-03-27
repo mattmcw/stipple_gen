@@ -78,7 +78,6 @@ import toxi.processing.*;
 ToxiclibsSupport gfx;
 
 public class Config {
-
   private String filePath;
   private File file;
   private String[] data;
