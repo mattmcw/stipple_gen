@@ -866,9 +866,11 @@ void doPhysics() {
 
     for (int i = vorPointsAdded; i < temp; i++) {  
       // Optional, for diagnostics:::
-      //  println("particles[i].x, particles[i].y " + particles[i].x + ", " + particles[i].y );
-
-      voronoi.addPoint(new Vec2D(particles[i].x, particles[i].y ));
+      try {
+        voronoi.addPoint(new Vec2D(particles[i].x, particles[i].y ));
+      } catch (Exception e) {
+        continue;
+      }
       vorPointsAdded++;
     }   
 
