@@ -78,7 +78,7 @@ import toxi.processing.*;
 // helper class for rendering
 ToxiclibsSupport gfx;
 
-import javax.swing.UIManager; 
+//import javax.swing.UIManager; 
 import javax.swing.JFileChooser; 
 
 public class Config {
@@ -89,7 +89,7 @@ public class Config {
 
   public int canvasWidth = 800;
   public int canvasHeight = 600;
-  public float canvasScalar = 1.25;
+  public float canvasScalar = 1.3;
 
   public boolean display = true;
   public int windowWidth = 800;
