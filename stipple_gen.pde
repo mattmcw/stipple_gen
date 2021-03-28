@@ -84,7 +84,7 @@ public class Config {
 
   public int canvasWidth = 800;
   public int canvasHeight = 600;
-  public float canvasScalar = 1.3;
+  public float canvasScalar = 2.0;
 
   public boolean display = true;
   public int windowWidth = 800;
