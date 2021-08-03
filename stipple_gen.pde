@@ -84,7 +84,7 @@ public class Config {
 
   public int canvasWidth = 800;
   public int canvasHeight = 600;
-  public float canvasScalar = 2.0;
+  public float canvasScalar = 1.0;
 
   public boolean display = true;
   public int windowWidth = 800;
@@ -1350,9 +1350,14 @@ void draw () {
     FileOutput = loadStrings("header.txt"); 
     String rowTemp;
 
+    for (i = 0; i < FileOutput.length; i++) {
+      FileOutput[i] = FileOutput[i].replace("{{WIDTH}}", str(config.canvasWidth));
+      FileOutput[i] = FileOutput[i].replace("{{HEIGHT}}", str(config.canvasHeight));
+    }
+
     //Need to get some background on this.
     //what are these magic numbers?
-    float SVGscale = (800.0 / (float) config.canvasHeight); 
+    float SVGscale = 1.0; //(800.0 / (float) config.canvasHeight); 
     //not centering the image is more controllable
     int xOffset = 0; //(int) (1536 - (SVGscale * config.canvasWidth / 2)); 
     int yOffset = 0; //(int) (1056  - (SVGscale * config.canvasHeight / 2));
