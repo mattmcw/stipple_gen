@@ -107,12 +107,15 @@ public class Config {
 
   public int maxParticles = 2000;   // Max value is normally 10000.
   public float cutoff =  0;  // White cutoff value
+  public int optimize = 1000;
 
   public boolean gammaCorrection = false;
   public float gamma = 1.0;
   
   public boolean fill = false;
   public float line = 1.0;
+
+  public String mode = "stipple"; //tsp
 
   public Config (String inputFile) {
     int index;
@@ -286,6 +289,12 @@ public class Config {
       case "line" :
         line = floatOrDie(name, val);
         break;
+      case "mode" :
+        mode = strOrDie(name, val);
+        break;
+      case "optimize" :
+        optimize = intOrDie(name, val);
+        break;
     }
     println("[" + source + "] " + name + "=" + val);
   }
@@ -331,7 +340,7 @@ boolean showPath;
 boolean showCells; 
 
 boolean TempShowCells;
-boolean FileModeTSP;
+boolean FileModeTSP = false;
 
 int vorPointsAdded;
 boolean VoronoiCalculated;
@@ -475,7 +484,6 @@ void MainArraysetup() {
   vorPointsAdded = 0;
   voronoi = new Voronoi();  // Erase mesh
   TempShowCells = true;
-  FileModeTSP = false;
 } 
 
 void settings () {
@@ -512,6 +520,10 @@ void setup () {
   showCells = false;
   fileLoaded = false;
   SaveNow = 0;
+  if (config.mode.equals("tsp") || config.mode.equals("TSP")) {
+    FileModeTSP = true;
+    println("Using TSP mode");
+  }
 
   background(0); 
 }
@@ -745,7 +757,7 @@ void OptimizePlotPath () {
 
     // Nearest neighbor ("Simple, Greedy") algorithm path optimization:
 
-    int StopPoint = RouteStep + 1000;      // 1000 steps per frame displayed; you can edit this number!
+    int StopPoint = RouteStep + config.optimize;      // 1000 steps per frame displayed; you can edit this number!
 
     if (StopPoint > (particleRouteLength - 1)) {
       StopPoint = particleRouteLength - 1;
@@ -1271,35 +1283,47 @@ void draw () {
       canvas.strokeWeight(1.0);
     }
 
-    for ( i = cellsCalculatedLast; i < cellsCalculated; i++) {
-      int px = (int) particles[i].x;
-      int py = (int) particles[i].y;
+    if (FileModeTSP) {
+      OptimizePlotPath();
+      canvas.background(255);
+      canvas.beginShape();
+      for ( i = 0; i < particleRouteLength; ++i) {
+        Vec2D p1 = particles[particleRoute[i]];  
+        float xTemp = p1.x;
+        float yTemp = p1.y;        
+        canvas.vertex(xTemp,  yTemp);
+      } 
+      canvas.endShape();
+    } else {
+      for ( i = cellsCalculatedLast; i < cellsCalculated; i++) {
+        int px = (int) particles[i].x;
+        int py = (int) particles[i].y;
 
-      if ((px >= imgblur.width) || (py >= imgblur.height) || (px < 0) || (py < 0)) {
-        continue;
-      }
-      
-      float v = (brightness(imgblur.pixels[ py*imgblur.width + px ]))/255; 
+        if ((px >= imgblur.width) || (py >= imgblur.height) || (px < 0) || (py < 0)) {
+          continue;
+        }
+        
+        float v = (brightness(imgblur.pixels[ py*imgblur.width + px ]))/255; 
 
-      if (config.invert) {
-        v = 1 - v;
-      }
+        if (config.invert) {
+          v = 1 - v;
+        }
 
-      if (v < cutoffScaled) { 
-        //println(v);
-        dotDiam = (config.maxDotSize - v * dotScale) * 2.0 * config.canvasScalar;
-        canvas.ellipse(px, py, dotDiam, dotDiam);
-        if (config.fill) {
-          hatchLines = fillCircle(px, py, dotDiam, 45.0, config.line * config.canvasScalar);
-          if (hatchLines.size() > 0) {
-            for (float[] linePoints : hatchLines) {
-              canvas.line(linePoints[0], linePoints[1], linePoints[2], linePoints[3]);
+        if (v < cutoffScaled) { 
+          dotDiam = (config.maxDotSize - v * dotScale) * 2.0 * config.canvasScalar;
+          canvas.ellipse(px, py, dotDiam, dotDiam);
+          if (config.fill) {
+            hatchLines = fillCircle(px, py, dotDiam, 45.0, config.line * config.canvasScalar);
+            if (hatchLines.size() > 0) {
+              for (float[] linePoints : hatchLines) {
+                canvas.line(linePoints[0], linePoints[1], linePoints[2], linePoints[3]);
+              }
             }
           }
         }
       }
+      cellsCalculatedLast = cellsCalculated;
     }
-    cellsCalculatedLast = cellsCalculated;
   }
 
   canvas.endDraw();
@@ -1345,7 +1369,9 @@ void draw () {
   }
 
   if (SaveNow > 0 && config.outputSVG != null) {
-    OptimizePlotPath();
+    if (!FileModeTSP) {
+      OptimizePlotPath();
+    }
     StatusDisplay = "Saving SVG File";
     FileOutput = loadStrings("header.txt"); 
     String rowTemp;
@@ -1367,7 +1393,7 @@ void draw () {
       println("Saving TSP File (SVG)");
       println(config.outputSVG);
       // Path header::
-      rowTemp = "<path style=\"fill:none;stroke:black;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;\" d=\"M "; 
+      rowTemp = "<path style=\"fill:none;stroke:black;stroke-width:1px;stroke-linejoin:round;stroke-linecap:round;\" d=\"M "; 
       FileOutput = append(FileOutput, rowTemp);
 
       for ( i = 0; i < particleRouteLength; ++i) {
@@ -1377,7 +1403,11 @@ void draw () {
         float xTemp = SVGscale * p1.x + xOffset;
         float yTemp = SVGscale * p1.y + yOffset;        
 
-        rowTemp = xTemp + " " + yTemp + "\r";
+        if (i == 0) {
+          rowTemp = xTemp + " " + yTemp + "\r";
+        } else {
+          rowTemp = "L " + xTemp + " " + yTemp + "\r";
+        }
 
         FileOutput = append(FileOutput, rowTemp);
       } 
@@ -1421,7 +1451,7 @@ void draw () {
     // SVG footer:
     FileOutput = append(FileOutput, "</g></g></svg>");
     saveStrings(config.outputSVG, FileOutput);
-    FileModeTSP = false; // reset for next time
+    //FileModeTSP = false; // reset for next time
 
     if (FileModeTSP) {
       ErrorDisplay = "TSP Path .SVG file Saved";
