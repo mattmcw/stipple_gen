@@ -1285,7 +1285,7 @@ void draw () {
 
     if (FileModeTSP) {
       OptimizePlotPath();
-      canvas.background(255);
+      canvas.background(config.invert ? 0 : 255);
       canvas.beginShape();
       for ( i = 0; i < particleRouteLength; ++i) {
         Vec2D p1 = particles[particleRoute[i]];  
