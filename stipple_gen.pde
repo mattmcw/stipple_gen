@@ -1313,6 +1313,9 @@ void draw () {
 
         if (v < cutoffScaled) { 
           dotDiam = (config.maxDotSize - v * dotScale) * config.canvasScalar;
+          if (dotDiam < config.minDotSize) {
+            dotDiam = config.minDotSize;
+          }
           canvas.ellipse(px, py, dotDiam, dotDiam);
           if (config.fill) {
             hatchLines = fillCircle(px, py, dotDiam, 45.0, config.line * config.canvasScalar);
