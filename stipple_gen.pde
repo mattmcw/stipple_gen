@@ -113,6 +113,7 @@ public class Config {
   public float gamma = 1.0;
   
   public boolean fill = false;
+  public boolean dot = false;
   public float line = 1.0;
 
   public String mode = "stipple"; //tsp
@@ -285,6 +286,9 @@ public class Config {
         gamma = floatOrDie(name, val);
       case "fill" :
         fill = boolOrDie(name, val);
+        break;
+      case "dot" :
+        dot = boolOrDie(name, val);
         break;
       case "line" :
         line = floatOrDie(name, val);
@@ -1285,6 +1289,15 @@ void draw () {
       canvas.strokeWeight(1.0);
     }
 
+    if (!FileModeTSP && config.dot) {
+      canvas.noStroke();
+      if (config.invert) {
+        canvas.fill(255);
+      } else {
+        canvas.fill(0);
+      }
+    }
+
     if (FileModeTSP) {
       OptimizePlotPath();
       canvas.background(config.invert ? 0 : 255);
@@ -1317,7 +1330,7 @@ void draw () {
             dotDiam = config.minDotSize;
           }
           canvas.ellipse(px, py, dotDiam, dotDiam);
-          if (config.fill) {
+          if (!config.dot && config.fill) {
             hatchLines = fillCircle(px, py, dotDiam, 45.0, config.line * config.canvasScalar);
             if (hatchLines.size() > 0) {
               for (float[] linePoints : hatchLines) {
@@ -1437,11 +1450,16 @@ void draw () {
 
         float xTemp = SVGscale * p1.x + xOffset;
         float yTemp = SVGscale * p1.y + yOffset; 
-
-        rowTemp = "<circle cx=\"" + xTemp + "\" cy=\"" + yTemp + "\" r=\"" + dotRad +
+        
+        if (config.dot) {
+          rowTemp = "<path d=\"M " + xTemp + "," + yTemp + " L " + (xTemp + 0.01 ) + "," + yTemp + "\" style=\"fill:none;stroke:black;stroke-width:" + dotRad + ";\"/>";
+        } else {
+          rowTemp = "<circle cx=\"" + xTemp + "\" cy=\"" + yTemp + "\" r=\"" + dotRad +
           "\" style=\"fill:none;stroke:black;stroke-width:1;\"/>";
         // Typ:   <circle  cx="1600" cy="450" r="3" style="fill:none;stroke:black;stroke-width:2;"/>
-        if (config.fill) {
+        }
+
+        if (!config.dot && config.fill) {
           hatchLines = fillCircle(xTemp, yTemp, dotRad * 2.0, 45.0, config.line);
           if (hatchLines.size() > 0) {
             for (float[] linePoints : hatchLines) {
