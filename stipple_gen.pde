@@ -1132,7 +1132,7 @@ public float[] line_circle_p(float x0, float y0, float x1, float y1, float cx, f
  **/
 ArrayList<float[]> fillCircle (float x, float y, float d, float angle, float line) {
   ArrayList<float[]> output = new ArrayList<float[]>();
-  float r = (d / 2.0) - line;
+  float r = (d / 2.0);
   float perpAngle = (angle + 90.0) % 360.0;
   float perpRadian = radians(perpAngle);
   float radian = radians(angle);
