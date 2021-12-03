@@ -12,7 +12,7 @@
  or command line arguments. Why do that? So this application can be used for
  automated image generation.
 
- Licence: LGPL 2.1
+ License: LGPL 2.1
 
  *******************************************************************************
  HISTORY
