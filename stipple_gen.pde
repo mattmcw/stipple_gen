@@ -1411,7 +1411,7 @@ void draw () {
       println("Saving TSP File (SVG)");
       println(config.outputSVG);
       // Path header::
-      rowTemp = "<path style=\"fill:none;stroke:black;stroke-width:1px;stroke-linejoin:round;stroke-linecap:round;\" d=\"M "; 
+      rowTemp = "<path style=\"fill:none;stroke:black;stroke-width:"+ config.line +";stroke-linejoin:round;stroke-linecap:round;\" d=\"M "; 
       FileOutput = append(FileOutput, rowTemp);
 
       for ( i = 0; i < particleRouteLength; ++i) {
