@@ -9,12 +9,10 @@
  a config file. Arguments take precedence over the config file.
 
  Why do it this way? So that the stippling process can be run headless with a config file
- storing the majority of the settings and the command line arguments handling things
- such as input and output file names. Why do that? So this process can be tied into
- automated image generation processes.
+ or command line arguments. Why do that? So this application can be used for
+ automated image generation.
 
- Begrudgingly but respectfully releasing this in accordance with the original LGPL license, 
- though I would prefer to use MIT or ISC which I consider to have fewer encumbrances.
+ License: LGPL 2.1
 
  *******************************************************************************
  HISTORY
