@@ -111,6 +111,8 @@ public class Config {
   public float gamma = 1.0;
   
   public boolean fill = false;
+  public float fillAngle = 45.0;
+  public boolean fillRandom = false;
   public boolean dot = false;
   public float line = 1.0;
 
@@ -284,6 +286,12 @@ public class Config {
         gamma = floatOrDie(name, val);
       case "fill" :
         fill = boolOrDie(name, val);
+        break;
+      case "fillAngle" :
+        fillAngle = floatOrDie(name, val);
+        break;
+      case "fillRandom" :
+        fillRandom = boolOrDie(name, val);
         break;
       case "dot" :
         dot = boolOrDie(name, val);
@@ -1188,6 +1196,7 @@ void draw () {
   float dotRad;
   float dotDiam;
   float cutoffScaled = 1 - config.cutoff;
+  float hatchAngle;
   ArrayList<float[]> hatchLines;
 
   canvas.beginDraw();
@@ -1329,7 +1338,8 @@ void draw () {
           }
           canvas.ellipse(px, py, dotDiam, dotDiam);
           if (!config.dot && config.fill) {
-            hatchLines = fillCircle(px, py, dotDiam, 45.0, config.line * config.canvasScalar);
+            hatchAngle = config.fillRandom ? random(0.0, 360.0) : config.fillAngle;
+            hatchLines = fillCircle(px, py, dotDiam, hatchAngle, config.line * config.canvasScalar);
             if (hatchLines.size() > 0) {
               for (float[] linePoints : hatchLines) {
                 canvas.line(linePoints[0], linePoints[1], linePoints[2], linePoints[3]);
@@ -1458,7 +1468,8 @@ void draw () {
         }
 
         if (!config.dot && config.fill) {
-          hatchLines = fillCircle(xTemp, yTemp, dotRad * 2.0, 45.0, config.line);
+          hatchAngle = config.fillRandom ? random(0.0, 360.0) : config.fillAngle;
+          hatchLines = fillCircle(xTemp, yTemp, dotRad * 2.0, hatchAngle, config.line);
           if (hatchLines.size() > 0) {
             for (float[] linePoints : hatchLines) {
               rowTemp += "<line x1=\"" + linePoints[0] + "\" y1=\"" + linePoints[1] + "\" x2=\"" + linePoints[2] + "\" y2=\"" + linePoints[3] + "\" style=\"fill:none;stroke:black;stroke-width:1;\"/>";

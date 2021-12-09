@@ -32,7 +32,7 @@ Other variables:
 ```java
 public int canvasWidth = 800;
 public int canvasHeight = 600;
-public float canvasScalar = 1.25;
+public float canvasScalar = 1.0;
 
 public boolean display = true;
 public int windowWidth = 800;
@@ -60,6 +60,7 @@ public boolean gammaCorrection = false;
 public float gamma = 1.0;
 
 public boolean fill = false;
+public boolean dot = false;
 public float line = 1.0;
 ```
 
