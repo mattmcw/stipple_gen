@@ -1145,9 +1145,9 @@ ArrayList<float[]> fillCircle (float x, float y, float d, float angle, float lin
   float testY = 0;
   float[] intersect;
 
-  for (int i = -floor(lines / 2); i < floor(lines / 2); i++) {
-    perpX = x + ((line * (i + 0.5)) * cos(perpRadian));
-    perpY = y + ((line * (i + 0.5)) * sin(perpRadian));
+  for (int i = -lines; i < lines; i++) {
+    perpX = x + ( ( (line / 2) * (i + 0.5) ) * cos(perpRadian));
+    perpY = y + ( ( (line / 2) * (i + 0.5) ) * sin(perpRadian));
     testX = perpX + (d * cos(radian));
     testY = perpY + (d * sin(radian));
     
@@ -1173,7 +1173,7 @@ ArrayList<float[]> fillCircle (float x, float y, float d, float angle, float lin
     }
 
     if (dist(startX, startY, endX, endY) > line) {
-      float[] linePoints = {startX, startY, endX, endY};
+      float[] linePoints = { startX, startY, endX, endY };
       output.add(linePoints);
     }
   }
