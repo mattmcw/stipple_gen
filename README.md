@@ -49,9 +49,9 @@ public int centroidsPerPass = 500;
 public int testsPerFrame = 90000;
 public int maxGenerations = 5; //number of generations
 
-public float MinDotSize = 1.25;
-public float MaxDotSize;
-public float DotSizeFactor = 4;
+public float minDotSize = 1.25;
+public float maxDotSize;
+public float dotSizeFactor = 4;
 
 public int maxParticles = 2000;   // Max value is normally 10000.
 public float cutoff =  0;  // White cutoff value
