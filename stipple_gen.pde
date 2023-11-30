@@ -87,6 +87,7 @@ public class Config {
   public boolean display = true;
   public int windowWidth = 800;
   public int windowHeight = 600; 
+  public int log = 1;
 
   public boolean invert = false;
 
@@ -181,7 +182,7 @@ public class Config {
       intVal = parseInt(val);
     } catch (Exception e) {
       println("Error parsing value " + name);
-      println(e);
+      println(e.toString());
       exit();
     }
     return intVal;
@@ -213,7 +214,7 @@ public class Config {
       floatVal = parseFloat(val);
     } catch (Exception e) {
       println("Error parsing value " + name);
-      println(e);
+      println(e.toString());
       exit();
     }
     return floatVal;
@@ -305,11 +306,44 @@ public class Config {
       case "optimize" :
         optimize = intOrDie(name, val);
         break;
+      case "log" :
+        log = intOrDie(name, val);
+        break;
     }
-    println("[" + source + "] " + name + "=" + val);
+    if (log > 0) {
+      println("[" + source + "] " + name + "=" + val);
+    }
   }
 }
 
+public class Logger {
+  private int level = 1;
+  public Logger (int logLevel) {
+    level = logLevel;
+  }
+
+  public void info (String line) {
+    if (level > 0) {
+      println(line);
+    }
+  }
+
+  public void debug (String line) {
+    if (level > 1) {
+      println("DEBUG: " + line);
+    }
+  }
+
+  public void error (String line) {
+    println("ERROR: " + line);
+  }
+
+  public void setLevel (int logLevel) {
+    level = logLevel;
+  }
+}
+
+Logger log = new Logger(1);
 Config config;
 
 final float ACCY    = 1E-9f;
@@ -411,10 +445,10 @@ void LoadImageAndScale() {
   mainRatio = (float) config.canvasWidth / (float) config.canvasHeight;
   windowRatio = (float) config.windowWidth / (float) config.windowHeight;
 
-  println("Image: " + imgload.width + "x" + imgload.height);
-  println("Ratio: " + imageRatio);
-  println("Main : " + config.canvasWidth + "x" + config.canvasHeight);
-  println("Ratio: " + mainRatio);
+  log.info("Image: " + imgload.width + "x" + imgload.height);
+  log.info("Ratio: " + imageRatio);
+  log.info("Main : " + config.canvasWidth + "x" + config.canvasHeight);
+  log.info("Ratio: " + mainRatio);
 
   //resize the image to fit within canvas size
   if ((imgload.width > config.canvasWidth) || (imgload.height > config.canvasHeight)) {
@@ -500,6 +534,7 @@ void MainArraysetup() {
 
 void settings () {
   config = new Config(sketchPath() + "/config.txt");
+  log.setLevel(config.log);
   if (config.display == true) {
     size(config.windowWidth, config.windowHeight, JAVA2D);
   }
@@ -534,7 +569,7 @@ void setup () {
   SaveNow = 0;
   if (config.mode.equals("tsp") || config.mode.equals("TSP")) {
     FileModeTSP = true;
-    println("Using TSP mode");
+    log.info("Using TSP mode");
   }
 
   background(0); 
@@ -551,13 +586,13 @@ void fileSelected (File selection) {
   boolean fileOK = false;
   
   if (selection == null) {
-    println("Window was closed or the user hit cancel.");
+    log.info("Window was closed or the user hit cancel.");
   } else {
-    //println("User selected " + selection.getAbsolutePath());
+    //log.info("User selected " + selection.getAbsolutePath());
     loadPath = selection.getAbsolutePath();
 
     // If a file was selected, print path to file 
-    println("Loaded file: " + loadPath); 
+    log.info("Loaded file: " + loadPath); 
 
     parts = splitTokens(loadPath, ".");
 
@@ -568,7 +603,7 @@ void fileSelected (File selection) {
       }
     }
 
-    println("File OK: " + fileOK); 
+    log.info("File OK: " + fileOK); 
 
     if (fileOK) {
       imgload = loadImage(loadPath); 
@@ -587,7 +622,7 @@ void fileSelected (File selection) {
 }
 
 void LOAD_FILE () {  
-  println(":::LOAD JPG, GIF or PNG FILE:::");
+  log.info(":::LOAD JPG, GIF or PNG FILE:::");
   selectInput("Select a file to process:", "fileSelected");  // Opens file chooser
 }
 
@@ -604,7 +639,7 @@ void SAVE_STIPPLES () {
 void SaveFileSelected (File selection) {
   if (selection == null) {
     // If a file was not selected
-    println("No output file was selected...");
+    log.info("No output file was selected...");
     ErrorDisplay = "ERROR: NO FILE NAME CHOSEN.";
     ErrorTime = millis();
     ErrorDisp = true;
@@ -623,7 +658,7 @@ void SaveFileSelected (File selection) {
     }
 
     // If a file was selected, print path to folder 
-    println("Save file: " + config.outputSVG);
+    log.info("Save file: " + config.outputSVG);
     SaveNow = 1; 
     showPath  = true;
 
@@ -678,14 +713,14 @@ void INVERT_IMG(float theValue) {
 
 void Stipples(int inValue) { 
   if (config.maxParticles != (int) inValue) {
-    println("Update:  Stipple Count -> " + inValue); 
+    log.info("Update:  Stipple Count -> " + inValue); 
     ReInitiallizeArray = true;
   }
 }
 
 void Min_Dot_Size(float inValue) {
   if (config.minDotSize != inValue) {
-    println("Update: Min_Dot_Size -> " + inValue);  
+    log.info("Update: Min_Dot_Size -> " + inValue);  
     config.minDotSize = inValue; 
     config.maxDotSize = config.minDotSize* (1 + config.dotSizeFactor);
   }
@@ -693,7 +728,7 @@ void Min_Dot_Size(float inValue) {
 
 void Dot_Size_Range(float inValue) {  
   if (config.dotSizeFactor != inValue) {
-    println("Update: Dot Size Range -> " + inValue); 
+    log.info("Update: Dot Size Range -> " + inValue); 
     config.dotSizeFactor = inValue;
     config.maxDotSize = config.minDotSize* (1 + config.dotSizeFactor);
   }
@@ -701,7 +736,7 @@ void Dot_Size_Range(float inValue) {
 
 void White_Cutoff(float inValue) {
   if (config.cutoff != inValue) {
-    println("Update: White_Cutoff -> "+inValue); 
+    log.info("Update: White_Cutoff -> "+inValue); 
     config.cutoff = inValue; 
     RouteStep = 0; // Reset TSP path
   }
@@ -720,7 +755,7 @@ void  DoBackgrounds() {
 }
 
 void OptimizePlotPath () { 
-  println("Optimizing plot path...");
+  log.info("Optimizing plot path...");
   int temp;
   StatusDisplay = "Optimizing plotting path";
   Vec2D p1;
@@ -801,7 +836,7 @@ void OptimizePlotPath () {
       if (RouteStep < (particleRouteLength - 1)) {
         RouteStep++;
       } else {
-        println("Now optimizing plot path" );
+        log.info("Now optimizing plot path" );
       }
     }
   } else {     
@@ -877,7 +912,7 @@ void doPhysics() {
     StatusDisplay = "Calculating Voronoi diagram "; 
 
     //    float millisBaseline = millis();  // Baseline for timing studies
-    //    println("Baseline.  Time = " + (millis() - millisBaseline) );
+    //    log.info("Baseline.  Time = " + (millis() - millisBaseline) );
 
     if (vorPointsAdded == 0) {
       voronoi = new Voronoi();  // Erase mesh
@@ -899,7 +934,7 @@ void doPhysics() {
     }   
 
     if (vorPointsAdded >= config.maxParticles) {
-      //    println("Points added.  Time = " + (millis() - millisBaseline) );
+      //    log.info("Points added.  Time = " + (millis() - millisBaseline) );
       cellsTotal =  (voronoi.getRegions().size());
       vorPointsAdded = 0;
       cellsCalculated = 0;
@@ -916,7 +951,7 @@ void doPhysics() {
   } else{    
   // Part II: Calculate weighted centroids of cells.
     //  float millisBaseline = millis();
-    //  println("fps = " + frameRate );
+    //  log.info("fps = " + frameRate );
 
     StatusDisplay = "Calculating weighted centroids"; 
 
@@ -1058,8 +1093,8 @@ void doPhysics() {
 
       cellsCalculated++;
     } 
-    //  println("cellsCalculated = " + cellsCalculated );
-    //  println("cellsTotal = " + cellsTotal );
+    //  log.info("cellsCalculated = " + cellsCalculated );
+    //  log.info("cellsTotal = " + cellsTotal );
 
     if (cellsCalculated >= cellsTotal) {
       VoronoiCalculated = false; 
@@ -1368,19 +1403,19 @@ void draw () {
     if (!TempShowCells && config.outputImage != null) {
       canvas.save(config.outputImage);
     }
-    println("Generation completed: " + Generation); 
-    println("Generation time: " + frameTime + " s");
+    log.info("Generation completed: " + Generation); 
+    log.info("Generation time: " + frameTime + " s");
     lastGeneration = Generation;
   }
 
   if (ErrorDisp) {
-    println(ErrorDisplay);
+    log.error(ErrorDisplay);
     if ((millis() - ErrorTime) > 8000) {
       ErrorDisp = false;
     }
   } else {
     if (!lastStatusDisplay.equals(StatusDisplay)) {
-      println(StatusDisplay);
+      log.info(StatusDisplay);
       lastStatusDisplay = StatusDisplay;
     }
   }
@@ -1416,8 +1451,8 @@ void draw () {
 
     if (FileModeTSP) { 
       // Plot the PATH between the points only.
-      println("Saving TSP File (SVG)");
-      println(config.outputSVG);
+      log.info("Saving TSP File (SVG)");
+      log.info(config.outputSVG);
       // Path header::
       rowTemp = "<path style=\"fill:none;stroke:black;stroke-width:"+ config.line +";stroke-linejoin:round;stroke-linecap:round;\" d=\"M "; 
       FileOutput = append(FileOutput, rowTemp);
@@ -1439,8 +1474,8 @@ void draw () {
       } 
       FileOutput = append(FileOutput, "\" />"); // End path description
     } else {
-      println("Saving Stipple File (SVG)");
-      println(config.outputSVG);
+      log.info("Saving Stipple File (SVG)");
+      log.info(config.outputSVG);
       for ( i = 0; i < particleRouteLength; ++i) {
 
         Vec2D p1 = particles[particleRoute[i]]; 
@@ -1494,7 +1529,7 @@ void draw () {
     ErrorTime = millis();
     ErrorDisp = true;
   } else if (SaveNow > 0 && config.outputSVG == null) {
-    println("Exiting without exporting SVG");
+    log.info("Exiting without exporting SVG");
   }
 
   if (SaveNow > 0) {

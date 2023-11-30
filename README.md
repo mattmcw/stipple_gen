@@ -37,6 +37,7 @@ public float canvasScalar = 1.0;
 public boolean display = true;
 public int windowWidth = 800;
 public int windowHeight = 600; 
+public int log = 1;  //0 = none, 1 = info, 2 = debug
 
 public boolean invert = false;
 
