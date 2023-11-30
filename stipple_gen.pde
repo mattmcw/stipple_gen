@@ -588,8 +588,8 @@ void fileSelected (File selection) {
   if (selection == null) {
     log.info("Window was closed or the user hit cancel.");
   } else {
-    //log.info("User selected " + selection.getAbsolutePath());
     loadPath = selection.getAbsolutePath();
+    log.debug("User selected " + loadPath);
 
     // If a file was selected, print path to file 
     log.info("Loaded file: " + loadPath); 
@@ -951,7 +951,7 @@ void doPhysics() {
   } else{    
   // Part II: Calculate weighted centroids of cells.
     //  float millisBaseline = millis();
-    //  log.info("fps = " + frameRate );
+    log.debug("fps = " + frameRate );
 
     StatusDisplay = "Calculating weighted centroids"; 
 
@@ -1093,8 +1093,8 @@ void doPhysics() {
 
       cellsCalculated++;
     } 
-    //  log.info("cellsCalculated = " + cellsCalculated );
-    //  log.info("cellsTotal = " + cellsTotal );
+    log.debug("cellsCalculated = " + cellsCalculated );
+    log.debug("cellsTotal = " + cellsTotal );
 
     if (cellsCalculated >= cellsTotal) {
       VoronoiCalculated = false; 
