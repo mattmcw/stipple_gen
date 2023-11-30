@@ -1403,8 +1403,8 @@ void draw () {
     if (!TempShowCells && config.outputImage != null) {
       canvas.save(config.outputImage);
     }
-    log.info("Generation completed: " + Generation); 
-    log.info("Generation time: " + frameTime + " s");
+    log.info("Generation completed: " + Generation + " / " + config.maxGenerations ); 
+    log.debug("Generation time: " + frameTime + " s");
     lastGeneration = Generation;
   }
 
@@ -1415,7 +1415,7 @@ void draw () {
     }
   } else {
     if (!lastStatusDisplay.equals(StatusDisplay)) {
-      log.info(StatusDisplay);
+      log.debug(StatusDisplay);
       lastStatusDisplay = StatusDisplay;
     }
   }
@@ -1499,7 +1499,7 @@ void draw () {
         } else {
           rowTemp = "<circle cx=\"" + xTemp + "\" cy=\"" + yTemp + "\" r=\"" + dotRad +
           "\" style=\"fill:none;stroke:black;stroke-width:1;\"/>";
-        // Typ:   <circle  cx="1600" cy="450" r="3" style="fill:none;stroke:black;stroke-width:2;"/>
+          // Typ:   <circle  cx="1600" cy="450" r="3" style="fill:none;stroke:black;stroke-width:2;"/>
         }
 
         if (!config.dot && config.fill) {
